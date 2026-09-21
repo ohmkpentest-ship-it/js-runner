@@ -1,7 +1,6 @@
 {
-  "name": "js-runner",
+  "name": "ssrf-payload-host",
   "version": "1.0.0",
-  "scripts": {
-    "start": "node index.js"
-  }
+  "main": "server.js",
+  "scripts": { "start": "node server.js" }
 }
